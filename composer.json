@@ -1,0 +1,43 @@
+{
+  "name": "iamshehzada/laravel-action-confirmation",
+  "description": "Require explicit confirmations for dangerous actions (web + api).",
+  "type": "library",
+  "license": "MIT",
+  "require": {
+    "php": "^8.1",
+    "illuminate/support": "^10.0|^11.0",
+    "illuminate/database": "^10.0|^11.0"
+  },
+  "require-dev": {
+    "orchestra/testbench": "^8.0|^9.0",
+    "pestphp/pest": "^2.0",
+    "pestphp/pest-plugin-laravel": "^2.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Iamshehzada\\ActionConfirmation\\": "src/"
+    },
+    "files": [
+      "src/Support/Helpers.php"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Iamshehzada\\ActionConfirmation\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Iamshehzada\\ActionConfirmation\\ActionConfirmationServiceProvider"
+      ]
+    }
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true,
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  }
+}
