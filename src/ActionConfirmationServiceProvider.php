@@ -3,27 +3,39 @@
 namespace Iamshehzada\ActionConfirmation;
 
 use Illuminate\Support\ServiceProvider;
-use Iamshehzada\ActionConfirmation\Builders\ConfirmActionBuilder;
+use Illuminate\Contracts\Debug\ExceptionHandler;
+use Iamshehzada\ActionConfirmation\Exceptions\ConfirmationRequiredException;
 
 class ActionConfirmationServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->mergeConfigFrom(__DIR__ . '/../config/action-confirmation.php', 'action-confirmation');
-
-        $this->app->bind(ConfirmActionBuilder::class, function ($app) {
-            return new ConfirmActionBuilder();
-        });
+        //
     }
 
     public function boot(): void
     {
-        $this->publishes([
-            __DIR__ . '/../config/action-confirmation.php' => config_path('action-confirmation.php'),
-        ], 'action-confirmation-config');
+        $this->registerExceptionHandler();
+    }
 
-        $this->publishes([
-            __DIR__ . '/../database/migrations/' => database_path('migrations'),
-        ], 'action-confirmation-migrations');
+    protected function registerExceptionHandler(): void
+    {
+        $handler = $this->app->make(ExceptionHandler::class);
+
+        if (method_exists($handler, 'renderable')) {
+            $handler->renderable(function (
+                ConfirmationRequiredException $e,
+                $request
+            ) {
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'message' => 'Confirmation required',
+                        'confirmation_id' => $e->token,
+                        'expires_in' => $e->expiresInSeconds,
+                        'reason_required' => $e->reasonRequired,
+                    ], 409);
+                }
+            });
+        }
     }
 }
